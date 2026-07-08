@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Tasks Page</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
+        #count-box, #counter { font-weight: bold; margin-bottom: 15px; color: #333; font-size: 18px; }
+        #grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; margin-top: 20px; }
+        .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .card img { max-width: 100%; height: 100px; object-fit: contain; }
+        button { background: green; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="count-box">Total Products : Loading...</div>
+    <div id="counter"></div>
+
+    <div id="grid"></div>
+
+    <script>
+        const countContainer = document.getElementById('count-box');
+        const gridElement = document.getElementById('grid');
+
+        fetch('https://fakestoreapi.com/products')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(); 
+                }
+                return response.json();
+            })
+            .then(products => { 
+
+
+
+                //Task 1 - Show Product Count
+                countContainer.innerHTML = `Total Products : ${products.length}`;
+
+
+                //Task 2 - Display Only Product Names
+                
+                let containerHTML1 = '';
+                products.forEach(product => {
+                    containerHTML1 += `<div>${product.title}</div>`;
+                });
+                gridElement.innerHTML = containerHTML1;
+                
+
+
+                //Task 3 - Display Products Below ₹100
+                
+                let containerHTML2 = '';
+                products.forEach(product => {
+                    if (product.price < 100) {
+                        containerHTML2 += `<div>${product.title} - ₹${product.price}</div>`;
+                    }
+                });
+                gridElement.innerHTML = containerHTML2;
+                
+
+
+                // Task 4 - Display Products Above ₹100
+                
+                let containerHTML3 = '';
+                products.forEach(product => {
+                    if (product.price > 100) {
+                        containerHTML3 += `<div>${product.title} - ₹${product.price}</div>`;
+                    }
+                });
+                gridElement.innerHTML = containerHTML3;
+                
+
+
+                // Task 5 - Show Category
+                
+                let containerHTML4 = '';
+                products.forEach(product => {
+                    containerHTML4 += `
+                        <div>
+                            <h3>${product.title}</h3>
+                            <p>Category : ${product.category}</p>
+                        </div>`;
+                });
+                gridElement.innerHTML = containerHTML4;
+                
+
+
+                // Task 6 - Display Rating
+                
+                let containerHTML5 = '';
+                products.forEach(product => {
+                    containerHTML5 += `
+                        <div>
+                            <h3>${product.title}</h3>
+                            <p>Rating : ⭐ ${product.rating.rate}</p>
+                        </div>`;
+                });
+                gridElement.innerHTML = containerHTML5;
+                
+
+
+                //  Task 7 - Product Search
+                
+                let searchText = "shirt"; 
+                let containerHTML6 = '';
+                products.forEach(product => {
+                    if (product.title.toLowerCase().includes(searchText.toLowerCase())) {
+                        containerHTML6 += `<div>${product.title}</div>`;
+                    }
+                });
+                gridElement.innerHTML = containerHTML6;
+                
+
+
+                //  Task 8 - Electronics Products
+                
+                let containerHTML7 = '';
+                products.forEach(product => {
+                    if (product.category === "electronics") {
+                        containerHTML7 += `<div>${product.title} (${product.category})</div>`;
+                    }
+                });
+                gridElement.innerHTML = containerHTML7;
+                
+
+
+                // Task 12 - Show First 5 Products
+                
+                let containerHTML11 = '';
+                products.forEach((product, index) => {
+                    if (index < 5) {
+                        containerHTML11 += `<div>Product ${index + 1}: ${product.title}</div>`;
+                    }
+                });
+                gridElement.innerHTML = containerHTML11;
+                
+
+
+                // Task 15 - Long Description Truncate
+                
+                let containerHTML14 = '';
+                products.forEach(product => {
+                    let descriptionText = product.description;
+                    if (descriptionText.length > 100) {
+                        descriptionText = descriptionText.substring(0, 100) + '... Read More...';
+                    }
+                    containerHTML14 += `
+                        <div>
+                            <h3>${product.title}</h3>
+                            <p>${descriptionText}</p>
+                        </div>`;
+                });
+                gridElement.innerHTML = containerHTML14;
+                
+
+
+                // Task 16 - Highest Rated Product
+                
+                let highestRated = products[0];
+                products.forEach(product => {
+                    if (product.rating.rate > highestRated.rating.rate) {
+                        highestRated = product; 
+                    }
+                });
+                gridElement.innerHTML = `<div>Highest Rated: ${highestRated.title} (⭐ ${highestRated.rating.rate})</div>`;
+                
+
+
+                //  Task 20 & Challenge Code
+                let searchKey = "shirt"; 
+                let targetCategory = "all"; 
+                let maxAllowedPrice = 150; 
+
+                let containerHTML = '';
+                let matchCounter = 0;
+
+                products.forEach(product => {
+                    let isTitleMatch = product.title.toLowerCase().includes(searchKey.toLowerCase());
+                    let isCategoryMatch = (targetCategory === "all" || product.category === targetCategory);
+                    let isPriceMatch = product.price <= maxAllowedPrice;
+
+                    if (isTitleMatch && isCategoryMatch && isPriceMatch) {
+                        matchCounter++;
+                        containerHTML += `
+                            <div class="card">
+                                <img src="${product.image}" width="100">
+                                <h3>${product.title}</h3>
+                                <p>Category: ${product.category}</p>
+                                <p>Rating: ⭐ ${product.rating.rate}</p>
+                                <h4>₹${product.price}</h4>
+                                <button>Buy Now</button>
+                            </div>`;
+                    }
+                });
+
+                document.getElementById('counter').innerText = `Matching Products Count : ${matchCounter}`;
+
+                if (matchCounter === 0) {
+                    gridElement.innerHTML = `<div>❌ No Products Found</div>`;
+                } else {
+                    gridElement.innerHTML = containerHTML;
+                }
+
+            })
+            .catch(error => {
+                //  Task 19 - Error Page Logic
+                gridElement.innerHTML = `
+                    <div style="text-align:center; color:red; padding:20px;">
+                        <h2>❌ Unable to Load Products</h2>
+                        <p>Please try again later.</p>
+                    </div>`;
+            });
+    </script>
+</body>
+</html>
